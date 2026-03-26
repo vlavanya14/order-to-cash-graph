@@ -363,6 +363,18 @@ def process_query(user_query: str) -> dict:
             answer = generate_natural_response(user_query, sql, data)
             return {"answer": answer, "sql": sql, "data": data, "blocked": False}
 
+        if "highest bill" in user_query.lower():
+            sql = """
+            SELECT billingDocument,
+                   totalNetAmount
+            FROM billing_document_headers
+            ORDER BY totalNetAmount DESC
+            LIMIT 1;
+            """
+            data = run_sql(sql)
+            answer = generate_natural_response(user_query, sql, data)
+            return {"answer": answer, "sql": sql, "data": data, "blocked": False}
+
         sql = generate_sql(user_query)
     except Exception as e:
         return {
