@@ -350,6 +350,19 @@ def process_query(user_query: str) -> dict:
             answer = generate_natural_response(user_query, sql, data)
             return {"answer": answer, "sql": sql, "data": data, "blocked": False}
 
+        if "highest sales" in user_query.lower():
+            sql = """
+            SELECT soldToParty AS customer,
+                   SUM(totalNetAmount) AS total_sales
+            FROM sales_order_headers
+            GROUP BY soldToParty
+            ORDER BY total_sales DESC
+            LIMIT 50;
+            """
+            data = run_sql(sql)
+            answer = generate_natural_response(user_query, sql, data)
+            return {"answer": answer, "sql": sql, "data": data, "blocked": False}
+
         sql = generate_sql(user_query)
     except Exception as e:
         return {
